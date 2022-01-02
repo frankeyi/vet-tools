@@ -1,0 +1,30 @@
+{
+  "name": "vet-tools",
+  "version": "0.2.0",
+  "private": false,
+  "author": "xiaoyi <398133088@qq.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/frankeyi/vet-tools",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vet-tools.es.js",
+      "require": "./dist/vet-tools.umd.js"
+    }
+  },
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "devDependencies": {
+    "vite": "^2.7.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
