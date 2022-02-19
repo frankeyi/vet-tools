@@ -109,6 +109,159 @@ console.log(shallow[0] === objects[0])
 // => true
 ```
 
+# pick
+
+创建一个从 `object` 中选中的属性的对象。
+
+```js
+/**
+ * @param {object} value 来源对象
+ * @param {props} (...(string|string[])) 要被忽略的属性。（注：单独指定或指定在数组中。）
+ * @returns {object} //返回一个新对象
+ */
+
+var object = { 'a': 1, 'b': '2', 'c': 3 };
+this.$T.pick(object, ['a', 'c']);
+// => { 'a': 1, 'c': 3 }
+```
+
+
+# find
+`find(collection, [predicate=_.identity], [fromIndex=0])`
+遍历 collection（集合）元素，返回 predicate（断言函数）第一个返回真值的第一个元素。predicate（断言函数）调用3个参数： (value, index|key, collection)。
+
+```js
+/**
+ * @param {Array|Object} collection  一个用来迭代的集合
+ * @param {Array|Function|Object|string} [predicate=_.identity] 每次迭代调用的函数
+ * @param {number} [fromIndex=0] 开始搜索的索引位置
+ * @returns {*} 返回匹配元素，否则返回 undefined
+ */
+
+var users = [
+  { 'user': 'barney',  'age': 36, 'active': true },
+  { 'user': 'fred',    'age': 40, 'active': false },
+  { 'user': 'pebbles', 'age': 1,  'active': true }
+];
+ 
+this.$T.find(users, function(o) { return o.age < 40; });
+// => object for 'barney'
+ 
+// The `_.matches` iteratee shorthand.
+this.$T.find(users, { 'age': 1, 'active': true });
+// => object for 'pebbles'
+ 
+// The `_.matchesProperty` iteratee shorthand.
+this.$T.find(users, ['active', false]);
+// => object for 'fred'
+ 
+// The `_.property` iteratee shorthand.
+this.$T.find(users, 'active');
+// => object for 'barney'
+```
+
+
+# findKey
+`findKey(object, [predicate=_.identity])`
+这个方法类似`find` 。 除了它返回最先被 predicate 判断为真值的元素 key，而不是元素本身。
+
+```js
+/**
+ * @param {Array|Object} collection  一个用来迭代的集合
+ * @param {Array|Function|Object|string} [predicate=_.identity] 每次迭代调用的函数
+ * @returns  返回匹配元素，否则返回 undefined
+ */
+
+var users = {
+  'barney':  { 'age': 36, 'active': true },
+  'fred':    { 'age': 40, 'active': false },
+  'pebbles': { 'age': 1,  'active': true }
+};
+ 
+this.$T.findKey(users, function(o) { return o.age < 40; });
+// => 'barney' (iteration order is not guaranteed)
+ 
+// The `_.matches` iteratee shorthand.
+this.$T.findKey(users, { 'age': 1, 'active': true });
+// => 'pebbles'
+ 
+// The `_.matchesProperty` iteratee shorthand.
+this.$T.findKey(users, ['active', false]);
+// => 'fred'
+ 
+// The `_.property` iteratee shorthand.
+this.$T.findKey(users, 'active');
+// => 'barney'
+```
+
+
+# keys
+`keys(object)`
+创建一个 `object` 的自身可枚举属性名为数组。
+
+```js
+/**
+ * @param {Object} object  要检索的对象
+ * @returns {Array} 返回包含属性名的数组
+ */
+
+function Foo() {
+  this.a = 1;
+  this.b = 2;
+}
+ 
+Foo.prototype.c = 3;
+ 
+this.$T.keys(new Foo);
+// => ['a', 'b'] (iteration order is not guaranteed)
+ 
+this.$T.keys('hi');
+// => ['0', '1']
+```
+
+
+# keysIn
+`keysIn(object)`
+创建一个 `object` 自身 和 继承的可枚举属性名为数组。
+
+```js
+/**
+ * @param {Object} object  要检索的对象
+ * @returns {Array} 返回包含属性名的数组
+ */
+
+function Foo() {
+  this.a = 1;
+  this.b = 2;
+}
+ 
+Foo.prototype.c = 3;
+ 
+this.$T.keysIn(new Foo);
+// => ['a', 'b', 'c'] (iteration order is not guaranteed)
+```
+
+
+# size
+`size(collection)`
+返回`collection`（集合）的长度，如果集合是类数组或字符串，返回其 length ；如果集合是对象，返回其可枚举属性的个数。
+
+```js
+/**
+ * @param {Array|Object} collection  要检查的集合
+ * @returns {Number} 返回集合的长度
+ */
+
+this.$T.size([1, 2, 3]);
+// => 3
+ 
+this.$T.size({ 'a': 1, 'b': 2 });
+// => 2
+ 
+this.$T.size('pebbles');
+// => 7
+```
+
 
 # Storage
 
@@ -256,10 +409,12 @@ this.$T.cookie.clear();
 /**
  * 数据转换为树形（递归）
  * @param {Array} list 基础数组
- * @param {String} sonId 子级属性名
- * @param {String} parentId 父级属性名
+ * @param {String} id 子级id名,默认'id'
+ * @param {String} parentId 父级id名,默认'parentId'
+ * @param {String} children 树形数据子数据的属性名,默认'children'
  * @returns {Array}
  */
+
 let list = [
 	{
 		id: 1,
@@ -272,7 +427,7 @@ let list = [
 		parentId: 1
 	}
 ]
-this.$T.toTree(list, "id", "parentId")
+this.$T.toTree(list, "id", "parentId","children")
 // =>
 // {
 // 	id: 1,
@@ -287,6 +442,56 @@ this.$T.toTree(list, "id", "parentId")
 // 		}
 // 	]
 // }
+```
+
+# flatTree
+
+树形数据结构的扁平化
+
+```js
+/**
+ *
+ * @param {Array} arrs 树形数据
+ * @param {string} childs 树形数据子数据的属性名,常用'children'
+ * @param {Array} attrArr 需要提取的公共属性数组(默认是除了childs的全部属性)
+ * @returns {Array}
+ */
+
+var list = [
+  {
+    a: 1,
+    b: 2,
+    c: 1,
+    children: [
+      {
+        a: 1,
+        b: 2,
+        c: 1,
+        children: [
+			{ a: 11, b: 21, c: 21 }
+		],
+      },
+    ],
+  },
+];
+
+this.$T.flatTree(list, "children", ["a", "b"])
+
+// =>
+// [
+//     {
+//         "a": 1,
+//         "b": 2
+//     },
+//     {
+//         "a": 1,
+//         "b": 2
+//     },
+//     {
+//         "a": 11,
+//         "b": 21
+//     }
+// ]
 ```
 
 # zeroFill
