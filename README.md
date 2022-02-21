@@ -109,6 +109,8 @@ console.log(shallow[0] === objects[0])
 // => true
 ```
 
+
+
 # pick
 
 创建一个从 `object` 中选中的属性的对象。
@@ -123,6 +125,22 @@ console.log(shallow[0] === objects[0])
 var object = { 'a': 1, 'b': '2', 'c': 3 };
 this.$T.pick(object, ['a', 'c']);
 // => { 'a': 1, 'c': 3 }
+```
+
+# omit
+
+反向版_.pick; 这个方法一个对象，这个对象由忽略属性之外的object自身和继承的可枚举属性组成。（注：可以理解为删除object对象的属性）。
+
+```js
+/**
+ * @param {object} value 来源对象
+ * @param {props} (...(string|string[])) 要被忽略的属性。（注：单独指定或指定在数组中。）
+ * @returns {object} //返回一个新对象
+ */
+
+var object = { 'a': 1, 'b': '2', 'c': 3 };
+this.$T.omit(object, ['a', 'c']);
+// => { 'b': '2' }
 ```
 
 
@@ -159,6 +177,43 @@ this.$T.find(users, ['active', false]);
 this.$T.find(users, 'active');
 // => object for 'barney'
 ```
+
+
+# findIndex
+`findIndex(array, [predicate=_.identity], [fromIndex=0])`
+该方法类似_.find，区别是该方法返回第一个通过 predicate 判断为真值的元素的索引值（index），而不是元素本身。
+
+```js
+/**
+ * @param {Array|Object} collection  一个用来迭代的集合
+ * @param {Array|Function|Object|string} [predicate=_.identity] 每次迭代调用的函数
+ * @param {number} [fromIndex=0] 开始搜索的索引位置
+ * @returns {number} 返回找到元素的 索引值（index），否则返回 -1。
+ */
+
+var users = [
+  { 'user': 'barney',  'active': false },
+  { 'user': 'fred',    'active': false },
+  { 'user': 'pebbles', 'active': true }
+];
+ 
+this.$T.findIndex(users, function(o) { return o.user == 'barney'; });
+// => 0
+ 
+// The `_.matches` iteratee shorthand.
+this.$T.findIndex(users, { 'user': 'fred', 'active': false });
+// => 1
+ 
+// The `_.matchesProperty` iteratee shorthand.
+this.$T.findIndex(users, ['active', false]);
+// => 0
+ 
+// The `_.property` iteratee shorthand.
+this.$T.findIndex(users, 'active');
+// => 2
+```
+
+
 
 
 # findKey
@@ -260,6 +315,137 @@ this.$T.size({ 'a': 1, 'b': 2 });
  
 this.$T.size('pebbles');
 // => 7
+```
+
+# uniq
+`uniq(array)`
+创建一个去重后的array数组副本。使用了SameValueZero 做等值比较。只有第一次出现的元素才会被保留。
+
+```js
+/**
+ * @param {Array} array  要检查的数组
+ * @returns {Array} 返回新的去重后的数组
+ */
+
+this.$T.uniq([2, 1, 2]);
+// => [2, 1]
+```
+
+
+# camelCase
+`camelCase([string=''])`
+转换字符串string为驼峰写法。
+
+```js
+/**
+ * @param {String} string  要转换的字符串
+ * @returns {String} 返回驼峰写法的字符串
+ */
+
+this.$T.camelCase('Foo Bar');
+// => 'fooBar'
+ 
+this.$T.camelCase('--foo-bar--');
+// => 'fooBar'
+ 
+this.$T.camelCase('__FOO_BAR__');
+// => 'fooBar'
+```
+
+
+# toLower
+`toLower([string=''])`
+转换整个string字符串的字符为小写，类似String#toLowerCase。
+
+```js
+/**
+ * @param {String} string  要转换的字符串
+ * @returns {String} 返回小写的字符串
+ */
+
+this.$T.toLower('--Foo-Bar--');
+// => '--foo-bar--'
+ 
+this.$T.toLower('fooBar');
+// => 'foobar'
+ 
+this.$T.toLower('__FOO_BAR__');
+// => '__foo_bar__'
+```
+
+
+# toUpper
+`toUpper([string=''])`
+转换整个string字符串的字符为大写，类似String#toUpperCase.
+
+```js
+/**
+ * @param {String} string  要转换的字符串
+ * @returns {String} 返回大写的字符串
+ */
+
+this.$T.toUpper('--foo-bar--');
+// => '--FOO-BAR--'
+ 
+this.$T.toUpper('fooBar');
+// => 'FOOBAR'
+ 
+this.$T.toUpper('__foo_bar__');
+// => '__FOO_BAR__'
+```
+
+
+# trim
+`trim([string=''], [chars=whitespace])`
+从string字符串中移除前面和后面的 空格 或 指定的字符。
+
+```js
+/**
+ * @param {String} string  要处理的字符串
+ * @param {String} chars  要移除的字符
+ * @returns {String} 返回大写的字符串
+ */
+
+this.$T.trim('  abc  ');
+// => 'abc'
+ 
+this.$T.trim('-_-abc-_-', '_-');
+// => 'abc'
+```
+
+
+# truncate
+`truncate([string=''], [options=])`
+截断string字符串，如果字符串超出了限定的最大值。 被截断的字符串后面会以 omission 代替，omission 默认是 "..."。
+
+```js
+/**
+ * @param {String} string  要处理的字符串
+ * @param {Object} [options.length=30] (number): 允许的最大长度。
+                   [options.omission='...'] (string): 超出后的代替字符。
+                   [options.separator] (RegExp|string): 截断点。
+ * @returns {String} 返回处理后的字符串
+ */
+
+this.$T.truncate('hi-diddly-ho there, neighborino');
+// => 'hi-diddly-ho there, neighbo...'
+ 
+this.$T.truncate('hi-diddly-ho there, neighborino', {
+  'length': 24,
+  'separator': ' '
+});
+// => 'hi-diddly-ho there,...'
+ 
+this.$T.truncate('hi-diddly-ho there, neighborino', {
+  'length': 24,
+  'separator': /,? +/
+});
+// => 'hi-diddly-ho there...'
+ 
+this.$T.truncate('hi-diddly-ho there, neighborino', {
+  'omission': ' [...]'
+});
+// => 'hi-diddly-ho there, neig [...]'
 ```
 
 

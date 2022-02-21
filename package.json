@@ -1,6 +1,6 @@
 {
   "name": "vet-tools",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "private": false,
   "author": "xiaoyi <398133088@qq.com>",
   "license": "MIT",
@@ -20,6 +20,17 @@
   "files": [
     "lib",
     "dist"
+  ],
+  "keywords": [
+    "vue",
+    "utils",
+    "storage",
+    "cookie",
+    "dom",
+    "flatTree",
+    "uuid",
+    "component",
+    "zeroFill"
   ],
   "devDependencies": {
     "vite": "^2.7.2"
